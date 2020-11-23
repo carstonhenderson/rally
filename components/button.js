@@ -1,7 +1,7 @@
 import React from 'react'
 import { roles } from '../hay.config'
 
-const Button = ({ type, role, text }) => {
+const Button = ({ type, role, text, onClick }) => {
   // const bgClass = `bg-${roles.background[role]}`
   // const textClass = `text-${roles.text[role]}`
   // const hoverClass = outline
@@ -12,7 +12,10 @@ const Button = ({ type, role, text }) => {
     <button
       type={type}
       className={`px-4 py-2 rounded shadow w-full text-center 
-        bg-${roles.background[role]} text-${roles.text[role]} hover:bg-${roles.background.hover[role]}`}
+        ${
+          role === 'secondary' ? '' : 'bg-' + roles.background[role]
+        } border border-${roles.background[role]} text-${roles.text[role]}`}
+      onClick={onClick}
     >
       {text}
     </button>
