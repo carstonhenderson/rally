@@ -13,41 +13,41 @@ export const spacing = {
 
 export const moods = {
   great: {
-    text: '😁 Great',
+    text: 'Great',
     color: 'purple-500',
-    base: 'purple',
-    raw: fullConfig.theme.colors.purple[500]
-  },
-  good: {
-    text: '🙂 Good',
-    color: 'green-500',
     base: 'green',
     raw: fullConfig.theme.colors.green[500]
   },
-  okay: {
-    text: '😐 Okay',
+  good: {
+    text: 'Good',
+    color: 'green-500',
+    base: 'teal',
+    raw: fullConfig.theme.colors.teal[500]
+  },
+  fine: {
+    text: 'Fine',
     color: 'yellow-500',
-    base: 'yellow',
-    raw: fullConfig.theme.colors.yellow[500]
+    base: 'blue',
+    raw: fullConfig.theme.colors.blue[500]
   },
   bad: {
-    text: '🙁 Bad',
+    text: 'Bad',
     color: 'orange-500',
-    base: 'orange',
-    raw: fullConfig.theme.colors.orange[500]
+    base: 'indigo',
+    raw: fullConfig.theme.colors.indigo[500]
   },
   terrible: {
-    text: '😔 Terrible',
+    text: 'Terrible',
     color: 'red-500',
-    base: 'red',
-    raw: fullConfig.theme.colors.red[500]
+    base: 'gray',
+    raw: fullConfig.theme.colors.gray[500]
   }
 }
 
 export const roles = {
   background: {
     primary: 'green-500',
-    secondary: 'green-100',
+    secondary: 'green-500',
     info: 'purple-500',
     success: 'green-500',
     danger: 'red-500',
@@ -61,9 +61,49 @@ export const roles = {
   },
   text: {
     primary: 'white',
-    secondary: 'blue-600',
+    secondary: 'green-500',
     info: 'white',
     success: 'white',
     danger: 'white'
   }
+}
+
+export const emotions = {
+  positive: [
+    'calm',
+    'confident',
+    'content',
+    'eager',
+    'ecstatic',
+    'engaged',
+    'excited',
+    'grateful',
+    'happy',
+    'humorous',
+    'inspired',
+    'loving',
+    'motivated',
+    'optimistic',
+    'passionate'
+  ],
+  negative: [
+    'angry',
+    'afraid',
+    'annoyed',
+    'anxious',
+    'ashamed',
+    'bored',
+    'confused',
+    'demoralized',
+    'depressed',
+    'disappointed',
+    'embarrassed',
+    'frustrated',
+    'guilty',
+    'insecure',
+    'lonely',
+    'sad',
+    'stressed',
+    'worried'
+  ]
 }
