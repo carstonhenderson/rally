@@ -7,9 +7,11 @@ const Text = ({ size, align, weight, italic, children }) => {
   const italicClass = italic ? 'italic' : ''
 
   return (
-    <div className={`${sizeClass} ${alignClass} ${weightClass} ${italicClass}`}>
+    <span
+      className={`${sizeClass} ${alignClass} ${weightClass} ${italicClass}`}
+    >
       {children}
-    </div>
+    </span>
   )
 }
 
