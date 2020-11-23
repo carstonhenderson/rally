@@ -58,11 +58,7 @@ const Index = () => {
             </Text>
           </Flex>
 
-          <ButtonLink
-            path="/entries/create"
-            role="secondary"
-            text="Add entry"
-          />
+          <ButtonLink path="/how-are-you" role="primary" text="Add entry" />
         </Flex>
 
         <Table>
