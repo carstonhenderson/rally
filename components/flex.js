@@ -6,9 +6,11 @@ const Flex = ({
   direction,
   justify,
   align,
+  alignContent,
   space,
   height,
-  constrain
+  constrain,
+  wrap
 }) => {
   const directionClass = direction ? `flex-${direction}` : ''
   const justifyClass = justify ? `justify-${justify}` : ''
@@ -16,6 +18,8 @@ const Flex = ({
   const heightClass = height ? `h-${height}` : ''
   const constrainClass =
     direction === 'col' ? 'flex-1 min-h-0' : 'flex-1 min-w-0'
+  const wrapClass = wrap ? 'flex-wrap' : ''
+  const alignContentClass = alignContent ? `content-${alignContent}` : ''
 
   let spaceClass = direction === 'col' ? 'mb' : 'mr'
 
@@ -23,7 +27,7 @@ const Flex = ({
 
   return (
     <div
-      className={`flex ${directionClass} ${justifyClass} ${alignClass} ${heightClass}`}
+      className={`flex ${directionClass} ${justifyClass} ${alignClass} ${heightClass} ${wrapClass} ${alignContentClass}`}
     >
       {Children.map(children, (child, index) => (
         <div
@@ -31,7 +35,7 @@ const Flex = ({
             constrain == index ? constrainClass : ''
           }
             ${constrain === 'all' ? constrainClass : ''}
-          }`}
+          `}
           key={index}
         >
           {child}
