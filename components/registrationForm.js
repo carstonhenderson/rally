@@ -23,9 +23,6 @@ let RegistrationForm = () => {
         password: password,
         password_confirmation: passwordConfirmation
       })
-      .then(response => {
-        console.log(response)
-      })
   }
 
   return (
