@@ -1,101 +1,152 @@
-import React from 'react'
-import useSWR from 'swr'
+import React, { useState, useEffect } from 'react'
+import useNotification from '../../hooks/notification'
 import axios from 'axios'
+import { motion, AnimateSharedLayout, AnimatePresence } from 'framer-motion'
 import BaseView from '../../views/baseView'
-import Head from 'next/head'
-import Notification from '../../components/notification'
 import Flex from '../../components/flex'
-import Link from '../../components/link'
 import ButtonLink from '../../components/buttonLink'
+import Button from '../../components/button'
 import Text from '../../components/text'
-import Table from '../../components/table'
-import TableHeader from '../../components/tableHeader'
-import TableHeaderRow from '../../components/tableHeaderRow'
-import TableHeaderData from '../../components/tableHeaderData'
-import TableRow from '../../components/tableRow'
-import TableBody from '../../components/tableBody'
-import TableData from '../../components/tableData'
+import EntryCard from '../../components/entryCard'
 
-const Index = () => {
-  const { data, error } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_PATH}/entries`,
-    async url => {
-      const response = await axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
-        }
-      })
+let Index = () => {
+	let [entries, setEntries] = useState(null)
+	let [error, setError] = useState(false)
+	let [expand, setExpand] = useState(false)
 
-      return response.data.data
-    }
-  )
+	let { notify } = useNotification()
 
-  const entries = data
+	useEffect(() => {
+		axios
+			.get(`${process.env.NEXT_PUBLIC_API_PATH}/entries`, {
+				headers: {
+					Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
+				}
+			})
+			.then(response => {
+				setEntries(response.data.data)
+				setError(false)
+			})
+			.catch(error => {
+				setError(error)
+			})
+	}, [])
 
-  if (error) {
-    return (
-      <BaseView title="Entries">
-        <div>failed to get entries :(</div>
-      </BaseView>
-    )
-  } else if (!entries) {
-    return (
-      <BaseView title="Entries">
-        <div>getting entries...</div>
-      </BaseView>
-    )
-  }
+	let deleteEntry = id => {
+		axios
+			.delete(`${process.env.NEXT_PUBLIC_API_PATH}/entries/${id}`, {
+				headers: {
+					Authorization: `Bearer ${window.localStorage.getItem('accessToken')}`
+				}
+			})
+			.then(response => {
+				setExpand(false)
+				if (response.status === 200) {
+					setEntries(() => entries.filter(entry => entry.id !== id))
+					notify('Entry deleted.')
+				}
+			})
+			.catch(() => {
+				notify('Something wrong happened... Try deleting again.')
+			})
+	}
 
-  return (
-    <BaseView title="Entries">
-      <Flex direction="col" space="md">
-        {/* <Notification text="Something happened!" role="info" /> */}
+	if (error) {
+		return (
+			<BaseView title="Entries">
+				<div>failed to get entries :(</div>
+			</BaseView>
+		)
+	} else if (!entries) {
+		return (
+			<BaseView title="Entries">
+				<div>getting entries...</div>
+			</BaseView>
+		)
+	}
 
-        <Flex justify="between" align="center">
-          <Flex space="xs">
-            <Text>
-              <Text weight="bold">3</Text> entries
-            </Text>
-          </Flex>
+	return (
+		<BaseView title="Entries">
+			<Flex direction="col" space="md">
+				<Flex justify="between" align="center">
+					<Flex space="xs">
+						<Text>
+							<Text weight="bold">{entries.length}</Text> entries
+						</Text>
+					</Flex>
 
-          <ButtonLink path="/how-are-you" role="primary" text="Add entry" />
-        </Flex>
+					<ButtonLink path="/how-are-you" role="primary" text="Add entry" />
+				</Flex>
 
-        <Table>
-          <TableHeader>
-            <TableHeaderRow>
-              <TableHeaderData align="left">Mood</TableHeaderData>
-              <TableHeaderData>Notes</TableHeaderData>
-              <TableHeaderData align="right">Date</TableHeaderData>
-            </TableHeaderRow>
-          </TableHeader>
+				<AnimateSharedLayout type="crossfade">
+					<Flex direction="col" space="md">
+						{entries.map((entry, index) => (
+							<div key={entry.id}>
+								<EntryCard
+									entry={entry}
+									layoutId={index}
+									expanded={false}
+									onClick={() => setExpand(index)}
+								/>
 
-          <TableBody>
-            {entries.map((entry, index) => {
-              return (
-                <TableRow key={index}>
-                  <TableData align="left">{entry.emoji}</TableData>
+								<AnimatePresence>
+									{expand === index && (
+										<>
+											<motion.div
+												initial={{ opacity: 0 }}
+												animate={{ opacity: 1 }}
+												exit={{ opacity: 0 }}
+												className="fixed inset-0 h-screen w-screen z-10 bg-gray-900 bg-opacity-50"
+											/>
 
-                  <TableData align="center" grow="2" truncate>
-                    <Link path={`/entries/${entry.id}`}>{entry.notes}</Link>
-                  </TableData>
+											<div className="fixed inset-0 h-screen w-screen z-20 flex justify-center items-center p-4">
+												<Flex direction="col" space="sm" width="full">
+													<EntryCard
+														entry={entry}
+														expanded={true}
+														onClick={() => setExpand(false)}
+													/>
 
-                  <TableData align="right">
-                    {new Date(entry.created_at).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short'
-                    })}
-                  </TableData>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </Flex>
+													<motion.div
+														initial={{ opacity: 0, y: 100 }}
+														animate={{ opacity: 1, y: 0 }}
+														transition={{ type: 'tween' }}
+														exit={{ opacity: 0, y: 100 }}
+													>
+														<div className="rounded shadow p-4 bg-gray-100">
+															<Flex
+																justify="between"
+																constrain="all"
+																space="sm"
+															>
+																<Button
+																	role="danger"
+																	text="Delete"
+																	onClick={() => deleteEntry(entry.id)}
+																/>
 
-      {/* <div className="text-center">You don't have any entries yet!</div> */}
-    </BaseView>
-  )
+																<ButtonLink
+																	path={`/entries/${entry.id}`}
+																	role="secondary"
+																	text="Edit"
+																/>
+															</Flex>
+														</div>
+													</motion.div>
+												</Flex>
+											</div>
+										</>
+									)}
+								</AnimatePresence>
+							</div>
+						))}
+					</Flex>
+				</AnimateSharedLayout>
+			</Flex>
+
+			{/* <div className="text-center">You don't have any entries yet!</div> */}
+		</BaseView>
+	)
 }
 
 export default Index
