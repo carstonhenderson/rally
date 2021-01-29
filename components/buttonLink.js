@@ -1,13 +1,20 @@
-import React from 'react'
-import Link from 'next/link'
+import React, { useContext } from 'react'
+import RouteTransitionAnimationContext from '../context/routeTransitionAnimationContext'
 import Button from './button'
 
-const ButtonLink = ({ path, role, text }) => (
-  <Link href={path}>
-    <a>
-      <Button type="button" role={role} outline text={text} />
-    </a>
-  </Link>
-)
+let ButtonLink = ({ path, role, text }) => {
+	let { setRoute, setExitPage } = useContext(RouteTransitionAnimationContext)
+
+	return (
+		<a
+			onClick={() => {
+				setRoute(path)
+				setExitPage(true)
+			}}
+		>
+			<Button type="button" role={role} outline text={text} />
+		</a>
+	)
+}
 
 export default ButtonLink
