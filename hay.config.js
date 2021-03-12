@@ -38,9 +38,9 @@ export const moods = {
 	},
 	terrible: {
 		text: 'Terrible',
-		color: 'gray-500',
+		color: 'gray-400',
 		base: 'gray',
-		raw: fullConfig.theme.colors.gray[500]
+		raw: fullConfig.theme.colors.gray[400]
 	}
 }
 
