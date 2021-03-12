@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { motion } from 'framer-motion'
 import BaseView from '../views/baseView'
 import axios from 'axios'
-import { useRouter } from 'next/router'
+import RouteTransitionAnimationContext from '../context/routeTransitionAnimationContext'
+import useNotification from '../hooks/notification'
 import StepOne from '../components/howAreYou/stepOne'
 import StepTwo from '../components/howAreYou/stepTwo'
 import StepThree from '../components/howAreYou/stepThree'
@@ -20,7 +21,8 @@ let HowAreYou = () => {
 
 	let animate = { backgroundColor: background }
 
-	let router = useRouter()
+	let { setNotificationText, setNotificationColor } = useNotification()
+	let { setRoute, setExitPage } = useContext(RouteTransitionAnimationContext)
 
 	let save = () => {
 		axios
@@ -39,9 +41,11 @@ let HowAreYou = () => {
 					}
 				}
 			)
-			.then(response => {
-				console.log(response)
-				router.push('/entries')
+			.then(() => {
+				setNotificationText('Entry created!')
+				setNotificationColor('primary')
+				setRoute('/entries')
+				setExitPage(true)
 			})
 	}
 
