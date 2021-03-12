@@ -14,7 +14,7 @@ let Index = () => {
 	let [error, setError] = useState(false)
 	let [expand, setExpand] = useState(false)
 
-	let { notify } = useNotification()
+	let { notify, color } = useNotification()
 
 	useEffect(() => {
 		axios
@@ -33,6 +33,8 @@ let Index = () => {
 	}, [])
 
 	let deleteEntry = id => {
+		setExpand(false)
+
 		axios
 			.delete(`${process.env.NEXT_PUBLIC_API_PATH}/entries/${id}`, {
 				headers: {
@@ -40,14 +42,13 @@ let Index = () => {
 				}
 			})
 			.then(response => {
-				setExpand(false)
 				if (response.status === 200) {
 					setEntries(() => entries.filter(entry => entry.id !== id))
-					notify('Entry deleted.')
+					notify('Entry deleted.', 'danger')
 				}
 			})
 			.catch(() => {
-				notify('Something wrong happened... Try deleting again.')
+				notify('Something wrong happened... Try deleting again.', 'danger')
 			})
 	}
 
@@ -82,12 +83,20 @@ let Index = () => {
 					<Flex direction="col" space="md">
 						{entries.map((entry, index) => (
 							<div key={entry.id}>
-								<EntryCard
-									entry={entry}
-									layoutId={index}
-									expanded={false}
-									onClick={() => setExpand(index)}
-								/>
+								<AnimatePresence>
+									<motion.div
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}
+									>
+										<EntryCard
+											entry={entry}
+											layoutId={index}
+											expanded={false}
+											onClick={() => setExpand(index)}
+										/>
+									</motion.div>
+								</AnimatePresence>
 
 								<AnimatePresence>
 									{expand === index && (
@@ -96,13 +105,14 @@ let Index = () => {
 												initial={{ opacity: 0 }}
 												animate={{ opacity: 1 }}
 												exit={{ opacity: 0 }}
-												className="fixed inset-0 h-screen w-screen z-10 bg-gray-900 bg-opacity-50"
+												className="fixed inset-0 h-screen w-screen z-10 bg-gray-900 bg-opacity-50 bg-blur"
 											/>
 
 											<div className="fixed inset-0 h-screen w-screen z-20 flex justify-center items-center p-4">
 												<Flex direction="col" space="sm" width="full">
 													<EntryCard
 														entry={entry}
+														layoutId={index}
 														expanded={true}
 														onClick={() => setExpand(false)}
 													/>
