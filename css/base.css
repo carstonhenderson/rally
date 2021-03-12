@@ -1,9 +1,9 @@
 @font-face {
-  font-family: 'Inter';
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: oblique 0deg 10deg;
-  src: url('../fonts/Inter.var.woff2?v=3.13') format('woff2');
+	font-family: 'Inter';
+	font-weight: 100 900;
+	font-display: swap;
+	font-style: oblique 0deg 10deg;
+	src: url('../fonts/Inter.var.woff2?v=3.13') format('woff2');
 }
 
 @tailwind base;
@@ -11,3 +11,9 @@
 @tailwind components;
 
 @tailwind utilities;
+
+@layer utilities {
+	.bg-blur {
+		backdrop-filter: blur(2px) saturate(160%) contrast(45%) brightness(140%);
+	}
+}

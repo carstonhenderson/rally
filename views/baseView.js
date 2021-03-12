@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import { useRouter } from 'next/router'
 import { motion, AnimatePresence } from 'framer-motion'
 import useNotification from '../hooks/notification'
@@ -9,12 +9,16 @@ import useNavBar from '../hooks/navBar'
 import Head from 'next/head'
 
 const BaseView = ({ title, noPadding, children }) => {
-	let [route, setRoute] = useState('')
-	let [exitPage, setExitPage] = useState(false)
+	let { route, exitPage, setExitPage } = useContext(
+		RouteTransitionAnimationContext
+	)
 
-	let { showNotification } = useNotification()
-
-	let pageTransitionAnimation = { route, setRoute, exitPage, setExitPage }
+	let {
+		showNotification,
+		notificationText,
+		notificationColor,
+		notify
+	} = useNotification()
 
 	let router = useRouter()
 
@@ -27,46 +31,49 @@ const BaseView = ({ title, noPadding, children }) => {
 
 			<main className="bg-grey-100 text-gray-900">
 				<div className="h-screen flex flex-col justify-between font-sans">
-					<AnimatePresence>
-						{showNotification && (
-							<motion.div
-								initial={{ opacity: 0, y: -100 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ type: 'tween' }}
-								exit={{ opacity: 0, y: -100 }}
-							>
-								<Notification text={showNotification} role="danger" />
-							</motion.div>
+					<AnimatePresence
+						onExitComplete={() => {
+							setExitPage(false)
+							router.push(route)
+						}}
+					>
+						{exitPage || (
+							<>
+								<AnimatePresence>
+									{showNotification && (
+										<motion.div
+											initial={{ opacity: 0, y: -100 }}
+											animate={{ opacity: 1, y: 0 }}
+											transition={{ type: 'tween' }}
+											exit={{ opacity: 0, y: -100 }}
+										>
+											<Notification
+												text={notificationText}
+												role={notificationColor}
+											/>
+										</motion.div>
+									)}
+								</AnimatePresence>
+
+								<motion.div
+									initial={{ opacity: 0 }}
+									transition={{ duration: 0.5 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									onAnimationComplete={() => {
+										notificationText &&
+											notify(notificationText, notificationColor)
+									}}
+									className={`container mx-auto flex-1 overflow-auto ${
+										noPadding ? '' : 'p-4'
+									}`}
+								>
+									{children}
+								</motion.div>
+								{useNavBar() && <NavBar />}
+							</>
 						)}
 					</AnimatePresence>
-
-					<RouteTransitionAnimationContext.Provider
-						value={pageTransitionAnimation}
-					>
-						<AnimatePresence
-							onExitComplete={() => {
-								setExitPage(false)
-								router.push(route)
-							}}
-						>
-							{exitPage || (
-								<>
-									<motion.div
-										initial={{ opacity: 0 }}
-										transition={{ duration: 0.5 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										className={`container mx-auto flex-1 overflow-auto ${
-											noPadding ? '' : 'p-4'
-										}`}
-									>
-										{children}
-									</motion.div>
-									{useNavBar() && <NavBar />}
-								</>
-							)}
-						</AnimatePresence>
-					</RouteTransitionAnimationContext.Provider>
 				</div>
 			</main>
 		</>
