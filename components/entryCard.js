@@ -4,7 +4,7 @@ import { moods } from '../hay.config'
 import Flex from './flex'
 import Text from './text'
 
-let EntryCard = ({ entry, expanded, onClick, key }) => (
+let EntryCard = ({ entry, expanded, onClick }) => (
 	<motion.div
 		layoutId={entry.id}
 		key={entry.id}
